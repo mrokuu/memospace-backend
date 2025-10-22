@@ -75,11 +75,12 @@ public class NoteController {
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size) {
         SearchNotesQuery query = new SearchNotesQuery(deckId, tag, q, page, size);
-        List<Note> notes = queryBus.send(query);
-        List<NoteDto> dtos = notes.stream()
+        var notes = queryBus.send(query)
+                .stream()
                 .map(noteWebMapper::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+                .toList();
+
+        return ResponseEntity.ok(notes);
     }
 
     @GetMapping("/{id}")

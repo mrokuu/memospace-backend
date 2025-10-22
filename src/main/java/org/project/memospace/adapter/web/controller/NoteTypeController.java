@@ -64,11 +64,12 @@ public class NoteTypeController {
     @Operation(summary = "Get all note types", description = "Retrieves all note types")
     @ApiResponse(responseCode = "200", description = "Note types retrieved successfully")
     public ResponseEntity<List<NoteTypeDto>> getAllNoteTypes() {
-        List<NoteType> noteTypes = queryBus.send(new GetAllNoteTypesQuery());
-        List<NoteTypeDto> dtos = noteTypes.stream()
+        var noteTypes = queryBus.send(new GetAllNoteTypesQuery())
+                .stream()
                 .map(webMapper::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+                .toList();
+
+        return ResponseEntity.ok(noteTypes);
     }
 
     @GetMapping("/{id}")
