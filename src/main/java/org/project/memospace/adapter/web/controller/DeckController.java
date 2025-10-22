@@ -38,11 +38,11 @@ public class DeckController {
     @Operation(summary = "List all decks", description = "Retrieve all available decks")
     @ApiResponse(responseCode = "200", description = "Decks retrieved successfully")
     public ResponseEntity<List<DeckDto>> listDecks() {
-        List<Deck> decks = queryBus.send(new ListDecksQuery());
-        List<DeckDto> deckDtos = decks.stream()
+        var decks = queryBus.send(new ListDecksQuery())
+                .stream()
                 .map(mapper::toDto)
                 .toList();
-        return ResponseEntity.ok(deckDtos);
+        return ResponseEntity.ok(decks);
     }
 
     @PostMapping

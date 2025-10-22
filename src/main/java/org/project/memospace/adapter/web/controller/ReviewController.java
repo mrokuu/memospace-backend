@@ -45,11 +45,11 @@ public class ReviewController {
             @Parameter(description = "Maximum number of cards to return") @RequestParam(defaultValue = "20") int limit) {
 
         GetNextDueCardsQuery query = new GetNextDueCardsQuery(limit, deckId);
-        List<Card> dueCards = queryBus.send(query);
-        List<CardDto> cardDtos = dueCards.stream()
+        var dueCards = queryBus.send(query)
+                .stream()
                 .map(cardMapper::toDto)
                 .toList();
-        return ResponseEntity.ok(cardDtos);
+        return ResponseEntity.ok(dueCards);
     }
 
     @PostMapping("/{cardId}")

@@ -108,11 +108,11 @@ public class FilteredDeckController {
             @Parameter(description = "Filtered deck ID") @PathVariable UUID id,
             @Parameter(description = "Number of cards to fetch") @RequestParam(defaultValue = "20") int limit) {
 
-        List<Card> cards = queryBus.send(new GetNextForFilteredDeckQuery(id, limit));
-        List<CardDto> cardDtos = cards.stream()
+        var cards = queryBus.send(new GetNextForFilteredDeckQuery(id, limit))
+                .stream()
                 .map(cardMapper::toDto)
                 .toList();
 
-        return ResponseEntity.ok(cardDtos);
+        return ResponseEntity.ok(cards);
     }
 }

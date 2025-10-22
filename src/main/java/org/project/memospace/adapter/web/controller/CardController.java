@@ -46,11 +46,12 @@ public class CardController {
 
         Boolean onlyDue = "overdue".equals(due) || "true".equals(due) ? true : null;
         SearchCardsQuery query = new SearchCardsQuery(deckId, search, onlyDue, page, size);
-        List<Card> cards = queryBus.send(query);
-        List<CardDto> cardDtos = cards.stream()
+        var cards = queryBus.send(query)
+                .stream()
                 .map(mapper::toDto)
                 .toList();
-        return ResponseEntity.ok(cardDtos);
+
+        return ResponseEntity.ok(cards);
     }
 
     @PostMapping
