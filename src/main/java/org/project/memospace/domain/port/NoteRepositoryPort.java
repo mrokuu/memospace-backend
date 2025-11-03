@@ -18,4 +18,6 @@ public interface NoteRepositoryPort {
     List<Note> findByNoteTypeId(UUID noteTypeId);
 
     boolean existsById(UUID id);
+
+    List<Note> findByDeckId(Long deckId);
 }

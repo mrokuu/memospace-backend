@@ -33,5 +33,6 @@ build/
 .vscode/
 
 ### Claude ###
-Claude.md
+CLAUDE.md
 .claude
+AGENTS.md

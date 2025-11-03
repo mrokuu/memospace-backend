@@ -18,4 +18,6 @@ public interface NoteTypeRepositoryPort {
     boolean existsByName(String name);
 
     boolean existsByNameAndIdNot(String name, UUID id);
+
+    Optional<NoteType> findByNameIgnoreCase(String name);
 }

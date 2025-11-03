@@ -97,6 +97,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage()
+        );
+        problemDetail.setType(URI.create("https://api.memospace.com/problems/invalid-request"));
+        problemDetail.setTitle("Invalid Request");
+        problemDetail.setProperty("timestamp", Instant.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
     @ExceptionHandler(MediaNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleMediaNotFoundException(MediaNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(

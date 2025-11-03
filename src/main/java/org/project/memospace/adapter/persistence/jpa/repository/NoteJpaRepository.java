@@ -16,6 +16,8 @@ public interface NoteJpaRepository extends JpaRepository<NoteEntity, UUID> {
 
     List<NoteEntity> findByNoteTypeId(UUID noteTypeId);
 
+    List<NoteEntity> findByDeckId(Long deckId);
+
     @Query("""
         SELECT DISTINCT n FROM NoteEntity n
         LEFT JOIN n.fields f

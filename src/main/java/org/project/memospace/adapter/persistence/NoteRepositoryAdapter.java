@@ -59,4 +59,11 @@ public class NoteRepositoryAdapter implements NoteRepositoryPort {
     public boolean existsById(UUID id) {
         return jpaRepository.existsById(id);
     }
+
+    @Override
+    public List<Note> findByDeckId(Long deckId) {
+        return jpaRepository.findByDeckId(deckId).stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }

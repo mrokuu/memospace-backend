@@ -53,4 +53,9 @@ public class NoteTypeRepositoryAdapter implements NoteTypeRepositoryPort {
     public boolean existsByNameAndIdNot(String name, UUID id) {
         return jpaRepository.existsByNameIgnoreCaseAndIdNot(name, id);
     }
+
+    @Override
+    public Optional<NoteType> findByNameIgnoreCase(String name) {
+        return jpaRepository.findByNameIgnoreCase(name).map(mapper::toDomain);
+    }
 }
