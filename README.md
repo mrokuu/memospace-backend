@@ -1,16 +1,32 @@
 # Memospace - Spaced Repetition Flashcard Backend
 
-Spaced-repetition flashcards app following hexagonal architecture and CQRS principles. Built with Java 21, Spring Boot 3.x, and H2 database.
+Spaced-repetition flashcards app following hexagonal architecture, CQRS, and Domain-Driven Design (DDD) principles. Built with Java 21, Spring Boot 3.5.6, and H2 database.
+
+## Recent Updates
+
+### Domain-Driven Design Integration (November 2025)
+Memospace now incorporates **Domain-Driven Design (DDD)** tactical and strategic patterns:
+
+- **Bounded Contexts**: Domain organized into 10 contexts (Authoring, Learning, Collection, Review, Media, Search, Import/Export, Analytics, IAM, Sync)
+- **Aggregates**: Business invariants enforced at aggregate boundaries (NoteAggregate, CardAggregate, etc.)
+- **Value Objects**: Type-safe domain primitives (NoteId, Ease, Quality, Tag, etc.)
+- **Domain Events**: Event-driven coordination between bounded contexts (NoteCreated, CardReviewed, etc.)
+- **Event Bus**: In-memory pub/sub for cross-context communication
+- **Anti-Corruption Layer**: Protect domain from external format pollution (APKG, JSON import)
+
+See `docs/context-map.md` and `docs/decision-records/adr-001-ddd-introduction.md` for details.
 
 ## Features
 
 - **Hexagonal Architecture**: Clean separation between domain, application, and infrastructure layers
 - **CQRS Pattern**: Command Query Responsibility Segregation for clear separation of read/write operations
+- **Domain-Driven Design**: Bounded contexts, aggregates, value objects, and domain events
 - **Note-Based Cards**: Generate flashcards from structured notes using customizable templates
 - **Spaced Repetition**: Implements SM-2 algorithm for optimal review scheduling
 - **Media Support**: Content-addressed storage for images and audio with automatic deduplication
 - **RESTful API**: Complete CRUD operations for decks, cards, notes, reviews, and media
 - **Template System**: Flexible card generation with support for cloze deletions
+- **Import/Export**: JSON-based backup and migration with duplicate detection
 - **H2 Database**: In-memory by default, file-based option available
 - **API Documentation**: Auto-generated Swagger UI
 - **Lombok Integration**: Reduced boilerplate code
@@ -448,64 +464,190 @@ java -jar target/memospace-0.0.1-SNAPSHOT.jar
 
 ## Architecture
 
-### Domain Layer
-- **Models**: `Deck`, `Card`, `Note`, `NoteType`, `CardTemplate`, `ReviewResult`, `ReviewLog`
-- **Services**: `SchedulerService` (SM-2 algorithm), `CardGenerationService`
-- **Ports**: Repository interfaces for all domain entities
-- **Exceptions**: Domain-specific exceptions
+Memospace implements a **three-layer hexagonal architecture** enhanced with **CQRS** and **Domain-Driven Design (DDD)** patterns.
 
-### Application Layer (CQRS)
+### 1. Domain Layer (Core Business Logic)
+
+The domain layer is **framework-agnostic** with no dependencies on Spring, JPA, or other infrastructure concerns.
+
+#### Bounded Contexts
+Domain is organized into bounded contexts with clear responsibilities:
+
+- **Authoring**: Note types, notes, card templates, and card generation
+- **Learning**: Card scheduling state and SM-2 algorithm
+- **Collection**: Deck hierarchy and organization
+- **Review**: Immutable review history (ReviewLog)
+- **Media**: Content-addressed media asset storage
+- **Search**: Query language and filtering
+- **Import/Export**: Format translation with Anti-Corruption Layer
+
+See `docs/context-map.md` for complete context map and relationships.
+
+#### DDD Tactical Patterns
+
+**Aggregates** (enforce business invariants):
+- `NoteAggregate`: Validates fields, normalizes tags, publishes domain events
+- `CardAggregate`: Enforces state transitions (NEW → LEARNING → REVIEW), manages scheduling
+- `DeckAggregate`: Validates hierarchy (`::`-separated names)
+- `ReviewLogAggregate`: Immutable audit log
+- `MediaAssetAggregate`: Validates MIME types and file sizes
+
+**Value Objects** (type-safe domain primitives):
+- **IDs**: `NoteId`, `NoteTypeId`, `CardId`, `DeckId` (prevent ID mixing)
+- **Learning**: `Ease` (≥1.3), `Interval` (≥1 day), `Quality` (0-4), `DueDate`
+- **Authoring**: `FieldName`, `FieldValue`, `TemplateName`, `Tag`
+- **Common**: `AuditTrail`, domain event base classes
+
+**Domain Events** (cross-context communication):
+- `NoteCreated`, `NoteUpdated`, `CardsRegenerated`
+- `CardReviewed`, `CardLapsed`, `CardGraduated`
+- `DeckCreated`, `DeckDeleted`
+- `MediaUploaded`, `MediaReferenced`
+
+**Domain Services**:
+- `SchedulerService`: SM-2 spaced repetition algorithm
+- `FilteredDeckService`: Query language parsing and evaluation
+- `ImportService`, `ExportService`: JSON import/export with deduplication
+- `QueryLanguageService`: Parse search queries
+
+**Repository Ports**: Define contracts for persistence (implemented by adapters)
+
+### 2. Application Layer (CQRS)
+
+Orchestrates domain logic using Command Query Responsibility Segregation:
+
 - **Commands**: Write operations (Create, Update, Delete)
 - **Queries**: Read operations (Get, Search)
-- **Command Handlers**: Execute commands with transaction management
-- **Query Handlers**: Execute queries with read optimization
+- **Handlers**: Execute commands/queries with transaction management
+  - Load aggregates from repositories
+  - Call aggregate behavior methods
+  - Pull and publish domain events via `DomainEventBus`
+  - Save aggregates
 - **Command Bus & Query Bus**: Route requests to appropriate handlers
 
-### Infrastructure Layer
-- **Web Adapters**: REST controllers, DTOs, mappers, exception handling
-- **Persistence Adapters**: JPA entities, repositories, entity mappers
+**Event-Driven Coordination**: Application handlers subscribe to domain events to coordinate behavior across bounded contexts.
 
-### Key Architectural Decisions
+### 3. Infrastructure/Adapter Layer
 
-- **CQRS Pattern**: Separates read and write operations for better scalability and clarity
-- **Hexagonal Architecture**: Domain logic is independent of frameworks
-- Domain models are framework-agnostic (no JPA annotations)
-- Repository ports abstract persistence concerns
-- Command/Query handlers coordinate business logic with transactions
-- Global exception handler provides consistent error responses
-- DTOs handle API serialization/validation
-- Lombok reduces boilerplate in DTOs, entities, and value objects
+Framework-specific implementations:
+
+**Web Adapters** (`adapter/web/`):
+- REST controllers route HTTP requests to CommandBus/QueryBus
+- DTOs handle API contracts with validation annotations
+- Mappers convert between domain aggregates and DTOs
+- Global exception handler for consistent error responses
+
+**Persistence Adapters** (`adapter/persistence/`):
+- JPA entities (separate from domain models)
+- Spring Data JPA repositories
+- Repository adapters implement domain ports
+- Mappers convert between domain aggregates and JPA entities
+
+**Event Adapters** (`adapter/event/`):
+- `InMemoryDomainEventBus`: Synchronous event pub/sub
+- Future: Outbox pattern or message queue adapters
+
+**Storage Adapters** (`adapter/storage/`):
+- `FilesystemMediaStorageAdapter`: Content-addressed storage (SHA-256)
+
+**Template Adapters** (`adapter/template/`):
+- `TemplateEngineAdapter`: Mustache-style card rendering
+
+### Key Architectural Principles
+
+- **Dependency Inversion**: Domain layer has no outward dependencies
+- **Separation of Concerns**: Bounded contexts isolate domain areas
+- **Type Safety**: Value objects prevent primitive obsession
+- **Invariant Protection**: Aggregates guard business rules
+- **Event-Driven Design**: Contexts communicate via domain events
+- **CQRS**: Separate models for reads and writes
+- **Hexagonal Ports**: Domain defines contracts, adapters implement them
 
 ## Project Structure
+
 ```
 src/main/java/org/project/memospace/
 ├── domain/
-│   ├── model/          # Domain entities (Deck, Card, Note, NoteType, etc.)
-│   ├── service/        # Domain services (SchedulerService, CardGenerationService)
-│   ├── port/           # Repository interfaces (ports)
-│   └── exception/      # Domain exceptions
+│   ├── common/              # Shared DDD building blocks
+│   │   ├── value/           # Common value objects (IDs, Tag, AuditTrail)
+│   │   ├── event/           # Domain event infrastructure
+│   │   ├── port/            # DomainEventBus port
+│   │   └── BoundedContext.java
+│   ├── authoring/           # Authoring bounded context
+│   │   ├── aggregate/       # NoteAggregate, NoteTypeAggregate
+│   │   ├── value/           # FieldName, FieldValue, TemplateName
+│   │   ├── event/           # NoteCreated, NoteUpdated, CardsRegenerated
+│   │   ├── port/            # Repository ports
+│   │   └── service/         # Domain services
+│   ├── learning/            # Learning/Scheduling bounded context
+│   │   ├── aggregate/       # CardAggregate (in progress)
+│   │   ├── value/           # Ease, Interval, Quality, DueDate
+│   │   ├── event/           # CardReviewed, CardLapsed, CardGraduated
+│   │   ├── port/            # Repository ports
+│   │   └── service/         # SchedulerService
+│   ├── collection/          # Collection bounded context
+│   │   └── aggregate/       # DeckAggregate (planned)
+│   ├── review/              # Review bounded context
+│   │   └── aggregate/       # ReviewLogAggregate (planned)
+│   ├── media/               # Media bounded context
+│   │   └── aggregate/       # MediaAssetAggregate (planned)
+│   ├── search/              # Search/Browser bounded context
+│   │   ├── spec/            # QuerySpec, Specifications
+│   │   └── service/         # QueryLanguageService
+│   ├── importexport/        # Import/Export bounded context
+│   │   ├── service/         # ImportService, ExportService
+│   │   └── acl/             # Anti-Corruption Layer (planned)
+│   ├── model/               # Legacy domain models (gradual migration)
+│   ├── service/             # Legacy domain services
+│   ├── port/                # Legacy repository ports
+│   └── exception/           # Domain exceptions
 ├── application/
-│   └── cqrs/
-│       ├── command/    # Command definitions (write operations)
-│       ├── query/      # Query definitions (read operations)
-│       ├── handler/    # Command and query handlers
-│       ├── impl/       # CommandBus and QueryBus implementations
-│       └── service/    # Application services
+│   └── service/
+│       ├── command/         # Command definitions (write operations)
+│       ├── query/           # Query definitions (read operations)
+│       ├── handler/         # Command and query handlers
+│       ├── impl/            # CommandBus and QueryBus implementations
+│       └── config/          # Application configuration
 ├── adapter/
 │   ├── web/
-│   │   ├── controller/ # REST controllers
-│   │   ├── dto/        # Data Transfer Objects
-│   │   └── mapper/     # Domain ↔ DTO mappers
-│   └── persistence/
-│       ├── entity/     # JPA entities
-│       ├── repository/ # Spring Data repositories
-│       └── adapter/    # Repository port implementations
-└── config/            # Spring configuration
+│   │   ├── controller/      # REST controllers
+│   │   ├── dto/             # Data Transfer Objects
+│   │   ├── mapper/          # Domain ↔ DTO mappers
+│   │   └── exception/       # Global exception handler
+│   ├── persistence/
+│   │   ├── jpa/
+│   │   │   ├── entity/      # JPA entities
+│   │   │   ├── repository/  # Spring Data repositories
+│   │   │   └── mapper/      # JPA entity ↔ Domain mappers
+│   │   └── stats/           # Stats read repositories
+│   ├── event/               # Event bus adapters
+│   │   └── InMemoryDomainEventBus.java
+│   ├── storage/             # File storage adapters
+│   └── template/            # Template engine adapters
+└── config/                  # Spring Boot configuration
 
 src/test/java/
-├── domain/            # Unit tests for domain logic
-└── integration/       # End-to-end integration tests
+├── domain/                  # Unit tests for domain logic
+│   ├── authoring/           # Authoring context tests
+│   └── learning/            # Learning context tests
+└── integration/             # End-to-end integration tests
+
+docs/                        # Project documentation
+├── context-map.md           # DDD bounded contexts and relationships
+├── decision-records/
+│   └── adr-001-ddd-introduction.md
+└── ddd-implementation-progress.md
 ```
+
+### Migration Notes
+
+Memospace is **gradually migrating** to DDD patterns:
+- **New aggregates** coexist with legacy models during transition
+- **Mappers** bridge old and new domain models
+- **New features** use DDD patterns immediately
+- **Existing features** migrate incrementally (use case by use case)
+
+See `CLAUDE.md` for detailed DDD contribution guidelines and `docs/ddd-implementation-progress.md` for migration status.
 
 ## Built With
 
@@ -518,3 +660,35 @@ src/test/java/
 - **Lombok** - Boilerplate reduction
 - **JUnit 5** - Testing framework
 - **Maven** - Build tool
+
+## Documentation
+
+- **`README.md`** - This file (quick start and API overview)
+- **`CLAUDE.md`** - Developer guide for AI-assisted development (architecture, patterns, DDD guidelines)
+- **`docs/context-map.md`** - DDD bounded contexts, relationships, and ubiquitous language
+- **`docs/decision-records/adr-001-ddd-introduction.md`** - Rationale for DDD adoption
+- **`docs/ddd-implementation-progress.md`** - Current DDD implementation status and roadmap
+
+## Contributing
+
+When contributing to Memospace, please follow the DDD patterns:
+
+1. **Identify bounded context** for your feature (Authoring, Learning, Collection, etc.)
+2. **Create value objects** for domain concepts (IDs, constraints, business logic)
+3. **Update/create aggregates** with behavior methods that enforce invariants
+4. **Define domain events** for significant state changes
+5. **Update repository ports** to accept value object IDs and specifications
+6. **Implement handlers** that orchestrate aggregates and publish events
+7. **Write tests**: Unit tests for aggregates/value objects, integration tests for use cases
+
+See `CLAUDE.md` for detailed contribution guidelines and architectural patterns.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Acknowledgments
+
+- **SM-2 Algorithm**: Based on SuperMemo's spaced repetition research
+- **Anki**: Inspiration for note-based flashcard system and media handling
+- **Domain-Driven Design**: Eric Evans and Vaughn Vernon's foundational work
