@@ -1,5 +1,6 @@
 package org.project.memospace.application.service.handler.note;
 
+import org.project.memospace.domain.learning.value.SchedulingDefaults;
 import org.project.memospace.domain.model.Card;
 import org.project.memospace.domain.model.CardTemplate;
 import org.project.memospace.domain.model.Note;
@@ -85,9 +86,9 @@ public class NoteCardGenerationService {
                 front,
                 back,
                 tags,
-                2.5,  // default ease factor
-                1,    // default interval
-                0,    // default repetitions
+                SchedulingDefaults.DEFAULT_EASE_FACTOR,
+                SchedulingDefaults.DEFAULT_INTERVAL_DAYS,
+                SchedulingDefaults.DEFAULT_REPETITIONS,
                 now,  // due at (new cards are due immediately)
                 now,  // created at
                 now,  // updated at

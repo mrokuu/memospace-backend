@@ -2,6 +2,7 @@ package org.project.memospace.domain.model;
 
 import lombok.Builder;
 import lombok.With;
+import org.project.memospace.domain.learning.value.SchedulingDefaults;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +35,22 @@ public record Card(@With Long id, Long deckId, String front, String back, List<S
 
     public static Card create(Long deckId, String front, String back, List<String> tags) {
         LocalDateTime now = LocalDateTime.now();
-        return new Card(null, deckId, front, back, tags, 2.5, 1, 0, now, now, now, null, null, null);
+        return new Card(
+                null,
+                deckId,
+                front,
+                back,
+                tags,
+                SchedulingDefaults.DEFAULT_EASE_FACTOR,
+                SchedulingDefaults.DEFAULT_INTERVAL_DAYS,
+                SchedulingDefaults.DEFAULT_REPETITIONS,
+                now,
+                now,
+                now,
+                null,
+                null,
+                null
+        );
     }
 
     public Card updateContent(String front, String back, List<String> tags) {
@@ -57,6 +73,7 @@ public record Card(@With Long id, Long deckId, String front, String back, List<S
     }
 
     public boolean isDue() {
-        return LocalDateTime.now().isAfter(dueAt) || LocalDateTime.now().isEqual(dueAt);
+        LocalDateTime now = LocalDateTime.now();
+        return !now.isBefore(dueAt);
     }
 }

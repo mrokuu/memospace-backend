@@ -22,13 +22,11 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
     private final NoteRepositoryPort noteRepository;
     private final CardRepositoryPort cardRepository;
 
-    private final Map<String, Long> actualDeckIds = new HashMap<>(); // Track actual deck IDs
-
     @Override
     @Transactional
     public ImportResult handle(ImportDataCommand command) {
-        // Clear state
-        actualDeckIds.clear();
+        // Track actual deck IDs (temporary ID -> actual ID mapping)
+        Map<String, Long> actualDeckIds = new HashMap<>();
 
         DuplicateDetector duplicateDetector = new DuplicateDetector();
         ImportService importService = new ImportService(
@@ -45,10 +43,10 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
         );
 
         // Execute import plan
-        int decksCreated = createDecks(plan);
+        int decksCreated = createDecks(plan, actualDeckIds);
         int noteTypesCreated = createNoteTypes(plan);
-        int notesCreated = createNotes(plan);
-        int cardsCreated = createCards(plan);
+        int notesCreated = createNotes(plan, actualDeckIds);
+        int cardsCreated = createCards(plan, actualDeckIds);
 
         // Build summary
         ImportSummary summary = new ImportSummary(
@@ -71,7 +69,7 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
         return new ImportResult(summary, combinedIdMapping, plan.warnings());
     }
 
-    private int createDecks(ImportPlan plan) {
+    private int createDecks(ImportPlan plan, Map<String, Long> actualDeckIds) {
         int count = 0;
 
         for (ExportDeck exportDeck : plan.decksToCreate()) {
@@ -119,7 +117,7 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
         return count;
     }
 
-    private int createNotes(ImportPlan plan) {
+    private int createNotes(ImportPlan plan, Map<String, Long> actualDeckIds) {
         int count = 0;
 
         for (ExportNote exportNote : plan.notesToCreate()) {
@@ -128,7 +126,7 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
             String newNoteTypeId = plan.noteTypeIdMapping().get(exportNote.noteTypeId());
 
             // Find actual deck ID (it might have been created)
-            Long deckId = resolveDeckId(newDeckId);
+            Long deckId = resolveDeckId(newDeckId, actualDeckIds);
 
             Note note = new Note(
                     UUID.fromString(newNoteId),
@@ -147,7 +145,7 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
         return count;
     }
 
-    private int createCards(ImportPlan plan) {
+    private int createCards(ImportPlan plan, Map<String, Long> actualDeckIds) {
         int count = 0;
         List<Card> cardsToSave = new ArrayList<>();
 
@@ -158,7 +156,7 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
             String newTemplateId = exportCard.templateId() != null ?
                     plan.templateIdMapping().get(exportCard.templateId()) : null;
 
-            Long deckId = resolveDeckId(newDeckId);
+            Long deckId = resolveDeckId(newDeckId, actualDeckIds);
 
             Card card = new Card(
                     null, // ID will be assigned
@@ -189,7 +187,7 @@ public class ImportDataCommandHandler implements CommandHandler<ImportDataComman
         return count;
     }
 
-    private Long resolveDeckId(String deckIdString) {
+    private Long resolveDeckId(String deckIdString, Map<String, Long> actualDeckIds) {
         if (deckIdString.startsWith("temp_deck_")) {
             // This is a temporary ID - look it up in actualDeckIds
             Long actualId = actualDeckIds.values().stream().findFirst().orElse(null);
