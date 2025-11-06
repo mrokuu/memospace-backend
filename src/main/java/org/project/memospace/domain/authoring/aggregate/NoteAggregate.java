@@ -48,6 +48,10 @@ public class NoteAggregate {
     private final NoteTypeId noteTypeId;
     private DeckId deckId;
     private NoteFields fields;
+    /**
+     * -- GETTER --
+     *  Get an immutable copy of tags.
+     */ // already immutable
     private Set<Tag> tags;
     private final AuditTrail audit;
 
@@ -122,7 +126,7 @@ public class NoteAggregate {
 
         this.deckId = newDeckId;
         this.fields = newFields;
-        this.tags = Collections.unmodifiableSet(new HashSet<>(newTags));
+        this.tags = Set.copyOf(newTags);
 
         validateFields();
         validateTags();
@@ -171,13 +175,6 @@ public class NoteAggregate {
      */
     public boolean hasTag(Tag tag) {
         return tags.contains(tag);
-    }
-
-    /**
-     * Get an immutable copy of tags.
-     */
-    public Set<Tag> getTags() {
-        return tags; // already immutable
     }
 
     /**

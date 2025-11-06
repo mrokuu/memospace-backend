@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 /**
  * In-memory implementation of DomainEventBus for synchronous event delivery.
  * Events are delivered immediately and synchronously within the same thread/transaction.
- *
+ * <p>
  * This implementation is simple and suitable for:
  * - Development and testing
  * - Single-instance deployments
  * - Use cases where eventual consistency is not required
- *
+ * <p>
  * For production multi-instance deployments, consider:
  * - Outbox pattern with polling publisher
  * - Message queue integration (Kafka, RabbitMQ, etc.)
@@ -94,19 +94,4 @@ public class InMemoryDomainEventBus implements DomainEventBus {
         log.debug("Cleared all {} event subscriptions", count);
     }
 
-    /**
-     * Get the number of subscribers for debugging/monitoring.
-     */
-    public int getSubscriberCount() {
-        return subscribers.values().stream()
-                .mapToInt(List::size)
-                .sum();
-    }
-
-    /**
-     * Get the number of event types with subscribers for debugging/monitoring.
-     */
-    public int getEventTypeCount() {
-        return subscribers.size();
-    }
 }

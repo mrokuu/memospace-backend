@@ -1,18 +1,13 @@
 package org.project.memospace.domain.common.value;
 
-import lombok.Value;
-
 import java.util.Objects;
 
 /**
  * Value object representing a normalized tag.
  * Tags are always lowercase and trimmed for consistency.
  */
-@Value
-public class Tag {
-    String value;
-
-    private Tag(String value) {
+public record Tag(String value) {
+    public Tag(String value) {
         Objects.requireNonNull(value, "Tag value cannot be null");
         String normalized = value.trim().toLowerCase();
 
@@ -28,10 +23,5 @@ public class Tag {
 
     public static Tag of(String value) {
         return new Tag(value);
-    }
-
-    @Override
-    public String toString() {
-        return value;
     }
 }

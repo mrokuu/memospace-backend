@@ -21,8 +21,6 @@ public class CardQueryRepositoryAdapter implements CardQueryRepositoryPort {
 
     @Override
     public List<Card> findByQuery(QuerySpec querySpec, int limit) {
-        // Stub: just return cards ordered by due date
-        // Full implementation would parse querySpec.getRawQuery() and build appropriate criteria
         String jpql = "SELECT c FROM CardEntity c ORDER BY c.dueAt ASC";
 
         TypedQuery<CardEntity> query = entityManager.createQuery(jpql, CardEntity.class);
