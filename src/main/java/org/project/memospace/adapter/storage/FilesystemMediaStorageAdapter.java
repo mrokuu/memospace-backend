@@ -24,6 +24,7 @@ public class FilesystemMediaStorageAdapter implements MediaStoragePort {
 
     private static final Logger log = LoggerFactory.getLogger(FilesystemMediaStorageAdapter.class);
     private static final String HASH_ALGORITHM = "SHA-256";
+    private static final int BUFFER_SIZE = 8192; // 8KB buffer for file I/O
 
     private final Path rootPath;
     private final MimeTypeValidator mimeTypeValidator;
@@ -98,7 +99,7 @@ public class FilesystemMediaStorageAdapter implements MediaStoragePort {
     }
 
     private long copyWithSizeLimit(InputStream in, OutputStream out, long maxSize) throws IOException {
-        byte[] buffer = new byte[8192];
+        byte[] buffer = new byte[BUFFER_SIZE];
         long total = 0;
         int read;
 

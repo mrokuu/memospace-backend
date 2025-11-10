@@ -26,123 +26,55 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DeckNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleDeckNotFoundException(DeckNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/deck-not-found"));
-        problemDetail.setTitle("Deck Not Found");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "deck-not-found", "Deck Not Found");
     }
 
     @ExceptionHandler(CardNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleCardNotFoundException(CardNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/card-not-found"));
-        problemDetail.setTitle("Card Not Found");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "card-not-found", "Card Not Found");
     }
 
     @ExceptionHandler(NoteTypeNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleNoteTypeNotFoundException(NoteTypeNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/note-type-not-found"));
-        problemDetail.setTitle("Note Type Not Found");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "note-type-not-found", "Note Type Not Found");
     }
 
     @ExceptionHandler(NoteNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleNoteNotFoundException(NoteNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/note-not-found"));
-        problemDetail.setTitle("Note Not Found");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "note-not-found", "Note Not Found");
     }
 
     @ExceptionHandler(FilteredDeckNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleFilteredDeckNotFoundException(FilteredDeckNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/filtered-deck-not-found"));
-        problemDetail.setTitle("Filtered Deck Not Found");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "filtered-deck-not-found", "Filtered Deck Not Found");
     }
 
     @ExceptionHandler(InvalidQueryException.class)
     public ResponseEntity<ProblemDetail> handleInvalidQueryException(InvalidQueryException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/invalid-query"));
-        problemDetail.setTitle("Invalid Query");
-        problemDetail.setProperty("timestamp", Instant.now());
+        ProblemDetail problemDetail = createProblemDetail(HttpStatus.BAD_REQUEST, ex.getMessage(), "invalid-query", "Invalid Query");
         problemDetail.setProperty("position", ex.getPosition());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
 
     @ExceptionHandler(MediaNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleMediaNotFoundException(MediaNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/media-not-found"));
-        problemDetail.setTitle("Media Not Found");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "media-not-found", "Media Not Found");
     }
 
     @ExceptionHandler(InvalidMediaException.class)
     public ResponseEntity<ProblemDetail> handleInvalidMediaException(InvalidMediaException ex) {
         HttpStatus status = determineMediaExceptionStatus(ex.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/invalid-media"));
-        problemDetail.setTitle("Invalid Media");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(status).body(problemDetail);
-    }
-
-    private HttpStatus determineMediaExceptionStatus(String message) {
-        if (message != null) {
-            if (message.contains("exceeds maximum") || message.contains("too large")) {
-                return HttpStatus.PAYLOAD_TOO_LARGE; // 413
-            }
-            if (message.contains("Unsupported media type")) {
-                return HttpStatus.UNSUPPORTED_MEDIA_TYPE; // 415
-            }
-            if (message.contains("filename") || message.contains("sanitization")) {
-                return HttpStatus.UNPROCESSABLE_ENTITY; // 422
-            }
-        }
-        return HttpStatus.BAD_REQUEST; // 400
+        return buildErrorResponse(status, ex.getMessage(), "invalid-media", "Invalid Media");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleValidationException(MethodArgumentNotValidException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+        ProblemDetail problemDetail = createProblemDetail(
                 HttpStatus.BAD_REQUEST,
-                "Validation failed"
+                "Validation failed",
+                "validation-failed",
+                "Validation Failed"
         );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/validation-failed"));
-        problemDetail.setTitle("Validation Failed");
-        problemDetail.setProperty("timestamp", Instant.now());
 
         Map<String, String> validationErrors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -157,53 +89,82 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ProblemDetail> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/invalid-argument"));
-        problemDetail.setTitle("Invalid Argument");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "invalid-argument", "Invalid Argument");
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ProblemDetail> handleIllegalStateException(IllegalStateException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.CONFLICT,
-                ex.getMessage()
-        );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/conflict"));
-        problemDetail.setTitle("Conflict");
-        problemDetail.setProperty("timestamp", Instant.now());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), "conflict", "Conflict");
     }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleGenericException(Exception ex) {
         // Handle 404 cases for missing static resources
         if (ex.getMessage() != null && ex.getMessage().contains("No static resource")) {
-            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                    HttpStatus.NOT_FOUND,
-                    "The requested resource was not found"
-            );
-            problemDetail.setType(URI.create("https://api.memospace.com/problems/not-found"));
-            problemDetail.setTitle("Resource Not Found");
-            problemDetail.setProperty("timestamp", Instant.now());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+            return buildErrorResponse(HttpStatus.NOT_FOUND, "The requested resource was not found", "not-found", "Resource Not Found");
         }
 
         // Handle all other exceptions as 500
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+        ProblemDetail problemDetail = createProblemDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected error occurred"
+                "An unexpected error occurred",
+                "internal-error",
+                "Internal Server Error"
         );
-        problemDetail.setType(URI.create("https://api.memospace.com/problems/internal-error"));
-        problemDetail.setTitle("Internal Server Error");
-        problemDetail.setProperty("timestamp", Instant.now());
         problemDetail.setProperty("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
+    }
+
+    /**
+     * Helper method to build a standard error response with ProblemDetail.
+     *
+     * @param status HTTP status code
+     * @param detail detailed error message
+     * @param problemType problem type identifier (will be appended to base URI)
+     * @param title human-readable title
+     * @return ResponseEntity with ProblemDetail body
+     */
+    private ResponseEntity<ProblemDetail> buildErrorResponse(HttpStatus status, String detail, String problemType, String title) {
+        ProblemDetail problemDetail = createProblemDetail(status, detail, problemType, title);
+        return ResponseEntity.status(status).body(problemDetail);
+    }
+
+    /**
+     * Creates a ProblemDetail object with standard properties.
+     *
+     * @param status HTTP status code
+     * @param detail detailed error message
+     * @param problemType problem type identifier (will be appended to base URI)
+     * @param title human-readable title
+     * @return configured ProblemDetail
+     */
+    private ProblemDetail createProblemDetail(HttpStatus status, String detail, String problemType, String title) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setType(URI.create("https://api.memospace.com/problems/" + problemType));
+        problemDetail.setTitle(title);
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    /**
+     * Determines appropriate HTTP status for media-related exceptions based on error message.
+     *
+     * @param message exception message
+     * @return appropriate HTTP status
+     */
+    private HttpStatus determineMediaExceptionStatus(String message) {
+        if (message != null) {
+            if (message.contains("exceeds maximum") || message.contains("too large")) {
+                return HttpStatus.PAYLOAD_TOO_LARGE; // 413
+            }
+            if (message.contains("Unsupported media type")) {
+                return HttpStatus.UNSUPPORTED_MEDIA_TYPE; // 415
+            }
+            if (message.contains("filename") || message.contains("sanitization")) {
+                return HttpStatus.UNPROCESSABLE_ENTITY; // 422
+            }
+        }
+        return HttpStatus.BAD_REQUEST; // 400
     }
 }

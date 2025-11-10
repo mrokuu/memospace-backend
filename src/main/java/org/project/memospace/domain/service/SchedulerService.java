@@ -1,18 +1,37 @@
 package org.project.memospace.domain.service;
 
+import org.project.memospace.domain.learning.value.Ease;
+import org.project.memospace.domain.learning.value.SchedulingDefaults;
 import org.project.memospace.domain.model.Card;
 import org.project.memospace.domain.model.ReviewResult;
 
 import java.time.LocalDateTime;
 
+/**
+ * Service implementing the SM-2 spaced repetition algorithm for card scheduling.
+ * <p>
+ * SM-2 algorithm constants:
+ * - First repetition interval: 1 day
+ * - Second repetition interval: 6 days
+ * - Subsequent intervals: previous_interval * ease_factor
+ */
 public class SchedulerService {
+
+    private static final int FIRST_REPETITION_INTERVAL = 1;  // days
+    private static final int SECOND_REPETITION_INTERVAL = 6; // days
+    private static final int PASSING_QUALITY_THRESHOLD = 3;
 
     public Card updateCardScheduling(Card card, ReviewResult reviewResult) {
         int quality = reviewResult.quality();
 
-        if (quality < 3) {
+        if (quality < PASSING_QUALITY_THRESHOLD) {
             // Failed review: reset to beginning
-            return card.updateScheduling(2.5, 1, 0, LocalDateTime.now().plusDays(1));
+            return card.updateScheduling(
+                    SchedulingDefaults.DEFAULT_EASE_FACTOR,
+                    SchedulingDefaults.DEFAULT_INTERVAL_DAYS,
+                    SchedulingDefaults.DEFAULT_REPETITIONS,
+                    LocalDateTime.now().plusDays(FIRST_REPETITION_INTERVAL)
+            );
         }
 
         // Successful review
@@ -20,16 +39,18 @@ public class SchedulerService {
         int newIntervalDays;
 
         if (newRepetitions == 1) {
-            newIntervalDays = 1;
+            newIntervalDays = FIRST_REPETITION_INTERVAL;
         } else if (newRepetitions == 2) {
-            newIntervalDays = 6;
+            newIntervalDays = SECOND_REPETITION_INTERVAL;
         } else {
             newIntervalDays = (int) Math.round(card.intervalDays() * card.easeFactor());
         }
 
-        // Update ease factor using SM-2 algorithm
-        double newEaseFactor = Math.max(1.3,
-            card.easeFactor() + (0.1 - (4 - quality) * (0.08 + (4 - quality) * 0.02)));
+        // Update ease factor using SM-2 algorithm formula
+        double newEaseFactor = Math.max(
+                Ease.MIN_EASE,
+                card.easeFactor() + (0.1 - (4 - quality) * (0.08 + (4 - quality) * 0.02))
+        );
 
         LocalDateTime newDueAt = LocalDateTime.now().plusDays(newIntervalDays);
 

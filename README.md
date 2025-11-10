@@ -2,19 +2,6 @@
 
 Spaced-repetition flashcards app following hexagonal architecture, CQRS, and Domain-Driven Design (DDD) principles. Built with Java 21, Spring Boot 3.5.6, and H2 database.
 
-## Recent Updates
-
-### Domain-Driven Design Integration (November 2025)
-Memospace now incorporates **Domain-Driven Design (DDD)** tactical and strategic patterns:
-
-- **Bounded Contexts**: Domain organized into 10 contexts (Authoring, Learning, Collection, Review, Media, Search, Import/Export, Analytics, IAM, Sync)
-- **Aggregates**: Business invariants enforced at aggregate boundaries (NoteAggregate, CardAggregate, etc.)
-- **Value Objects**: Type-safe domain primitives (NoteId, Ease, Quality, Tag, etc.)
-- **Domain Events**: Event-driven coordination between bounded contexts (NoteCreated, CardReviewed, etc.)
-- **Event Bus**: In-memory pub/sub for cross-context communication
-- **Anti-Corruption Layer**: Protect domain from external format pollution (APKG, JSON import)
-
-See `docs/context-map.md` and `docs/decision-records/adr-001-ddd-introduction.md` for details.
 
 ## Features
 
@@ -280,7 +267,6 @@ Response:
 ### Media References in Notes
 - Markdown: `![alt](/media/{id})`
 - HTML: `<img src="/media/{id}">`, `<audio src="/media/{id}">`
-- Anki-style: `[sound:filename.mp3]`
 
 ### Security
 - Maximum file size: 25 MB (configurable)
@@ -374,23 +360,6 @@ curl -X POST http://localhost:8080/api/v1/import/json \
 }
 ```
 
-### Import Behavior
-
-#### Duplicate Detection
-- Notes are detected as duplicates based on content hash (note type + field values)
-- Duplicate notes are skipped during import
-- Cards from duplicate notes are remapped to existing notes
-
-#### ID Remapping
-- All UUIDs are regenerated during import
-- ID mapping is returned in the response for reference
-- Foreign key relationships are automatically updated
-
-#### Deck & Note Type Reuse
-- Decks with matching names are reused (not duplicated)
-- Note types with matching names and field structures are reused
-- Use `X-NoteType-Mapping` header for explicit note type mapping
-
 #### Import Response
 ```json
 {
@@ -422,10 +391,6 @@ curl -X POST http://localhost:8080/api/v1/import/json \
   ]
 }
 ```
-
-### APKG Import (MVP - Coming Soon)
-Basic APKG import support is planned for future releases. This will allow importing Anki decks (.apkg files) with Basic and Cloze note types.
-
 ## Review Quality Scale
 
 - **0**: Complete blackout - no recollection
@@ -647,8 +612,6 @@ Memospace is **gradually migrating** to DDD patterns:
 - **New features** use DDD patterns immediately
 - **Existing features** migrate incrementally (use case by use case)
 
-See `CLAUDE.md` for detailed DDD contribution guidelines and `docs/ddd-implementation-progress.md` for migration status.
-
 ## Built With
 
 - **Java 21** - Programming language
@@ -664,10 +627,6 @@ See `CLAUDE.md` for detailed DDD contribution guidelines and `docs/ddd-implement
 ## Documentation
 
 - **`README.md`** - This file (quick start and API overview)
-- **`CLAUDE.md`** - Developer guide for AI-assisted development (architecture, patterns, DDD guidelines)
-- **`docs/context-map.md`** - DDD bounded contexts, relationships, and ubiquitous language
-- **`docs/decision-records/adr-001-ddd-introduction.md`** - Rationale for DDD adoption
-- **`docs/ddd-implementation-progress.md`** - Current DDD implementation status and roadmap
 
 ## Contributing
 
@@ -681,14 +640,6 @@ When contributing to Memospace, please follow the DDD patterns:
 6. **Implement handlers** that orchestrate aggregates and publish events
 7. **Write tests**: Unit tests for aggregates/value objects, integration tests for use cases
 
-See `CLAUDE.md` for detailed contribution guidelines and architectural patterns.
-
 ## License
 
 This project is licensed under the MIT License.
-
-## Acknowledgments
-
-- **SM-2 Algorithm**: Based on SuperMemo's spaced repetition research
-- **Anki**: Inspiration for note-based flashcard system and media handling
-- **Domain-Driven Design**: Eric Evans and Vaughn Vernon's foundational work
