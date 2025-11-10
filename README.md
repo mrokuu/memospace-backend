@@ -530,78 +530,171 @@ Framework-specific implementations:
 
 ## Project Structure
 
-```
-src/main/java/org/project/memospace/
-├── domain/
-│   ├── common/              # Shared DDD building blocks
-│   │   ├── value/           # Common value objects (IDs, Tag, AuditTrail)
-│   │   ├── event/           # Domain event infrastructure
-│   │   ├── port/            # DomainEventBus port
-│   │   └── BoundedContext.java
-│   ├── authoring/           # Authoring bounded context
-│   │   ├── aggregate/       # NoteAggregate, NoteTypeAggregate
-│   │   ├── value/           # FieldName, FieldValue, TemplateName
-│   │   ├── event/           # NoteCreated, NoteUpdated, CardsRegenerated
-│   │   ├── port/            # Repository ports
-│   │   └── service/         # Domain services
-│   ├── learning/            # Learning/Scheduling bounded context
-│   │   ├── aggregate/       # CardAggregate (in progress)
-│   │   ├── value/           # Ease, Interval, Quality, DueDate
-│   │   ├── event/           # CardReviewed, CardLapsed, CardGraduated
-│   │   ├── port/            # Repository ports
-│   │   └── service/         # SchedulerService
-│   ├── collection/          # Collection bounded context
-│   │   └── aggregate/       # DeckAggregate (planned)
-│   ├── review/              # Review bounded context
-│   │   └── aggregate/       # ReviewLogAggregate (planned)
-│   ├── media/               # Media bounded context
-│   │   └── aggregate/       # MediaAssetAggregate (planned)
-│   ├── search/              # Search/Browser bounded context
-│   │   ├── spec/            # QuerySpec, Specifications
-│   │   └── service/         # QueryLanguageService
-│   ├── importexport/        # Import/Export bounded context
-│   │   ├── service/         # ImportService, ExportService
-│   │   └── acl/             # Anti-Corruption Layer (planned)
-│   ├── model/               # Legacy domain models (gradual migration)
-│   ├── service/             # Legacy domain services
-│   ├── port/                # Legacy repository ports
-│   └── exception/           # Domain exceptions
-├── application/
-│   └── service/
-│       ├── command/         # Command definitions (write operations)
-│       ├── query/           # Query definitions (read operations)
-│       ├── handler/         # Command and query handlers
-│       ├── impl/            # CommandBus and QueryBus implementations
-│       └── config/          # Application configuration
-├── adapter/
-│   ├── web/
-│   │   ├── controller/      # REST controllers
-│   │   ├── dto/             # Data Transfer Objects
-│   │   ├── mapper/          # Domain ↔ DTO mappers
-│   │   └── exception/       # Global exception handler
-│   ├── persistence/
-│   │   ├── jpa/
-│   │   │   ├── entity/      # JPA entities
-│   │   │   ├── repository/  # Spring Data repositories
-│   │   │   └── mapper/      # JPA entity ↔ Domain mappers
-│   │   └── stats/           # Stats read repositories
-│   ├── event/               # Event bus adapters
-│   │   └── InMemoryDomainEventBus.java
-│   ├── storage/             # File storage adapters
-│   └── template/            # Template engine adapters
-└── config/                  # Spring Boot configuration
+The project follows a **multi-module Maven structure** with clear separation of concerns:
 
-src/test/java/
-├── domain/                  # Unit tests for domain logic
-│   ├── authoring/           # Authoring context tests
-│   └── learning/            # Learning context tests
-└── integration/             # End-to-end integration tests
+```
+memospace-backend/
+├── domain/                  # Domain layer (pure business logic)
+│   └── src/main/java/org/memospace/
+│       ├── common/          # Shared DDD building blocks
+│       │   ├── value/       # Common value objects (IDs, Tag, AuditTrail)
+│       │   ├── event/       # Domain event infrastructure (DomainEvent, BaseDomainEvent)
+│       │   └── port/        # DomainEventBus port
+│       ├── authoring/       # Authoring bounded context
+│       │   ├── aggregate/   # NoteAggregate, NoteTypeAggregate
+│       │   ├── value/       # FieldName, FieldValue, TemplateName, NoteFields
+│       │   ├── event/       # NoteCreated, NoteUpdated, CardsRegenerated
+│       │   ├── port/        # Repository ports
+│       │   └── service/     # Domain services
+│       ├── learning/        # Learning/Scheduling bounded context
+│       │   ├── aggregate/   # CardAggregate (in progress)
+│       │   ├── value/       # Ease, Interval, Quality, DueDate
+│       │   ├── event/       # CardReviewed, CardLapsed, CardGraduated (planned)
+│       │   └── service/     # SchedulerService (SM-2 algorithm)
+│       ├── collection/      # Collection bounded context
+│       │   └── aggregate/   # DeckAggregate (planned)
+│       ├── review/          # Review bounded context
+│       │   └── aggregate/   # ReviewLogAggregate (planned)
+│       ├── media/           # Media bounded context
+│       │   └── aggregate/   # MediaAssetAggregate (planned)
+│       ├── search/          # Search/Browser bounded context
+│       │   ├── spec/        # QuerySpec, Specifications
+│       │   └── service/     # QueryLanguageService
+│       ├── importexport/    # Import/Export bounded context (planned)
+│       ├── model/           # Legacy domain models (gradual migration)
+│       │   ├── Card.java, Note.java, Deck.java, NoteType.java
+│       │   ├── exportimport/  # Export/import models
+│       │   └── stats/       # Statistics models
+│       ├── service/         # Legacy domain services
+│       │   ├── SchedulerService.java
+│       │   ├── ImportService.java, ExportService.java
+│       │   ├── FilteredDeckService.java
+│       │   └── stats/       # Stats computation services
+│       ├── port/            # Legacy repository ports
+│       │   ├── CardRepositoryPort.java
+│       │   ├── NoteRepositoryPort.java
+│       │   └── stats/       # Stats read ports
+│       └── exception/       # Domain exceptions
+├── application/             # Application layer (CQRS orchestration)
+│   └── src/main/java/org/memospace/
+│       ├── config/          # CQRS configuration
+│       │   ├── CqrsConfiguration.java
+│       │   └── DomainConfig.java
+│       ├── dto/             # Application-level DTOs
+│       │   ├── CreateNoteDto.java
+│       │   ├── UpdateNoteDto.java
+│       │   └── RegenerateCardsDto.java
+│       └── service/
+│           ├── Command.java, Query.java
+│           ├── CommandBus.java, QueryBus.java
+│           ├── CommandHandler.java, QueryHandler.java
+│           ├── command/     # Command definitions (write operations)
+│           │   ├── card/    # CreateCardCommand, UpdateCardCommand, etc.
+│           │   ├── deck/    # CreateDeckCommand, UpdateDeckCommand, etc.
+│           │   ├── note/    # CreateNoteCommand, UpdateNoteCommand, etc.
+│           │   ├── notetype/
+│           │   ├── filtereddeck/
+│           │   ├── importexport/
+│           │   └── media/
+│           ├── query/       # Query definitions (read operations)
+│           │   ├── card/    # GetCardQuery, SearchCardsQuery, etc.
+│           │   ├── deck/    # GetDeckQuery, ListDecksQuery
+│           │   ├── note/    # GetNoteQuery, SearchNotesQuery, etc.
+│           │   ├── notetype/
+│           │   ├── filtereddeck/
+│           │   ├── export/
+│           │   ├── media/
+│           │   ├── review/
+│           │   └── stats/
+│           ├── handler/     # Command and query handlers
+│           │   ├── card/    # CreateCardCommandHandler, etc.
+│           │   ├── deck/
+│           │   ├── note/    # Includes NoteCardGenerationService
+│           │   ├── notetype/
+│           │   ├── filtereddeck/
+│           │   ├── importexport/
+│           │   ├── export/
+│           │   ├── media/
+│           │   ├── review/
+│           │   └── stats/
+│           └── impl/        # CommandBus and QueryBus implementations
+│               ├── SimpleCommandBus.java
+│               └── SimpleQueryBus.java
+└── adapter/                 # Infrastructure/Adapter layer
+    └── src/main/java/org/memospace/
+        ├── MemospaceApplication.java  # Spring Boot main class
+        ├── config/          # Spring Boot configuration
+        │   ├── MediaConfig.java
+        │   ├── OpenApiConfig.java
+        │   └── WebConfig.java
+        ├── web/             # Web adapters
+        │   ├── controller/  # REST controllers
+        │   │   ├── CardController.java
+        │   │   ├── DeckController.java
+        │   │   ├── NoteController.java
+        │   │   ├── NoteTypeController.java
+        │   │   ├── ReviewController.java
+        │   │   ├── FilteredDeckController.java
+        │   │   ├── MediaController.java
+        │   │   ├── ImportController.java
+        │   │   ├── ExportController.java
+        │   │   └── StatsController.java
+        │   ├── dto/         # Data Transfer Objects (API contracts)
+        │   │   ├── CardDto.java, CreateCardRequest.java, etc.
+        │   │   ├── stats/   # Stats DTOs
+        │   │   └── importexport/  # Import/export DTOs
+        │   ├── mapper/      # Domain ↔ DTO mappers
+        │   │   ├── CardWebMapper.java
+        │   │   ├── NoteWebMapper.java
+        │   │   └── StatsWebMapper.java
+        │   └── exception/   # Global exception handler
+        │       └── GlobalExceptionHandler.java
+        ├── persistence/     # Persistence adapters
+        │   ├── jpa/
+        │   │   ├── entity/  # JPA entities (separate from domain models)
+        │   │   │   ├── CardEntity.java
+        │   │   │   ├── NoteEntity.java
+        │   │   │   ├── DeckEntity.java
+        │   │   │   └── NoteTypeEntity.java
+        │   │   ├── repository/  # Spring Data JPA repositories
+        │   │   │   ├── CardJpaRepository.java
+        │   │   │   ├── NoteJpaRepository.java
+        │   │   │   └── DeckJpaRepository.java
+        │   │   └── mapper/  # JPA entity ↔ Domain mappers
+        │   │       ├── CardJpaMapper.java
+        │   │       └── NoteJpaMapper.java
+        │   ├── stats/       # Stats read repositories
+        │   │   ├── CardStatsReadAdapter.java
+        │   │   └── ReviewLogStatsReadAdapter.java
+        │   ├── CardRepositoryAdapter.java
+        │   ├── NoteRepositoryAdapter.java
+        │   └── DeckRepositoryAdapter.java
+        ├── event/           # Event bus adapters
+        │   └── InMemoryDomainEventBus.java
+        ├── storage/         # File storage adapters
+        │   ├── FilesystemMediaStorageAdapter.java
+        │   └── MimeTypeValidator.java
+        └── template/        # Template engine adapters
+            └── TemplateEngineAdapter.java
 
 docs/                        # Project documentation
 ├── context-map.md           # DDD bounded contexts and relationships
 ├── decision-records/
 │   └── adr-001-ddd-introduction.md
 └── ddd-implementation-progress.md
+
+CLAUDE.md                    # Claude Code project instructions
+```
+
+### Module Dependencies
+
+```
+adapter  →  application  →  domain
+   ↓           ↓              ↓
+Spring    CQRS/Buses    Pure Business Logic
+Web/JPA   Handlers      No Framework Dependencies
+Config    Commands      Aggregates, Value Objects
+          Queries       Domain Services, Events
 ```
 
 ### Migration Notes
