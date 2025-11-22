@@ -15,6 +15,7 @@
       <module name="adapter" target="21" />
       <module name="application" target="21" />
       <module name="domain" target="21" />
+      <module name="memospace" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
