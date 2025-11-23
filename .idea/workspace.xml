@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc36216b-47e9-4bcb-bfe1-54910d4e2b4f" name="Changes" comment="refactor: fix imports" />
+    <list default="true" id="cc36216b-47e9-4bcb-bfe1-54910d4e2b4f" name="Changes" comment="create authorization service">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authorizationservice/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/authorizationservice/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,7 +21,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/refactor-1" />
+        <entry key="$PROJECT_DIR$" value="main-microservices" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,32 +46,33 @@
     <option name="showLibraryContents" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.MemospaceApplication (1).executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.MemospaceApplication (2).executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.MemospaceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/adammroczkowski/IdeaProjects/memospace-backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.MemospaceApplication (1).executor": "Run",
+    "Spring Boot.MemospaceApplication (2).executor": "Run",
+    "Spring Boot.MemospaceApplication.executor": "Run",
+    "git-widget-placeholder": "#11 on feature/create-authorization-service",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/adammroczkowski/IdeaProjects/memospace-backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "run.configurations.included.in.services": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/domain" />
@@ -99,7 +105,7 @@
       </map>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.MemospaceApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="memospace-backend" />
       <method v="2">
@@ -110,6 +116,13 @@
       <module name="memospace-backend" />
       <option name="filePath" />
       <method v="2" />
+    </configuration>
+    <configuration name="AuthorizationserviceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="authorizationservice" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.project.authorizationservice.AuthorizationserviceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="MemospaceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="adapter" />
@@ -175,6 +188,9 @@
       <workItem from="1762794477613" duration="65000" />
       <workItem from="1762794561304" duration="106000" />
       <workItem from="1763158459095" duration="1062000" />
+      <workItem from="1763738357563" duration="1446000" />
+      <workItem from="1763835802452" duration="1500000" />
+      <workItem from="1763898797020" duration="420000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: small code improvement">
       <option name="closed" value="true" />
@@ -304,7 +320,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763159091702</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="create main branch for microservices">
+      <option name="closed" value="true" />
+      <created>1763738490893</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1763738490893</updated>
+    </task>
+    <task id="LOCAL-00018" summary="create authorization service">
+      <option name="closed" value="true" />
+      <created>1763835960478</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1763835960478</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -322,6 +354,8 @@
     <MESSAGE value="refactor: update README.md" />
     <MESSAGE value="refactor: refactor code" />
     <MESSAGE value="refactor: fix imports" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: fix imports" />
+    <MESSAGE value="create main branch for microservices" />
+    <MESSAGE value="create authorization service" />
+    <option name="LAST_COMMIT_MESSAGE" value="create authorization service" />
   </component>
 </project>

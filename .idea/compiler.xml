@@ -2,25 +2,28 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for memospace" enabled="true">
+      <profile name="Annotation profile for authorizationservice" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
+        <module name="authorizationservice" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="adapter" target="21" />
       <module name="application" target="21" />
       <module name="domain" target="21" />
+      <module name="memospace" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="adapter" options="-parameters" />
       <module name="application" options="-parameters" />
+      <module name="authorizationservice" options="-parameters" />
       <module name="domain" options="-parameters" />
       <module name="memospace" options="-parameters" />
     </option>
