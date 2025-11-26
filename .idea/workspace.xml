@@ -65,7 +65,7 @@
     "Spring Boot.MemospaceApplication.executor": "Run",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/adammroczkowski/IdeaProjects/memospace-backend/deckservice/src/main/java/org/project/deckservice/application/handler",
+    "last_opened_file_path": "/Users/adammroczkowski/IdeaProjects/memospace-backend/cardservice/src/main/java/com/example/cardservice",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -78,6 +78,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cardservice/src/main/java/com/example/cardservice" />
       <recent name="$PROJECT_DIR$/deckservice/src/main/java/org/project/deckservice/application/handler" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -111,7 +112,7 @@
       </map>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.DeckserviceApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="memospace-backend" />
       <method v="2">
