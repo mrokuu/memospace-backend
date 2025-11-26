@@ -7,6 +7,9 @@ import com.example.cardservice.domain.model.Card;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class CardRepositoryAdapter {
@@ -19,4 +22,21 @@ public class CardRepositoryAdapter {
         CardEntity savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
+
+    
+//    public Optional<Deck> findById(Long id) {
+//        return jpaRepository.findById(id)
+//                .map(mapper::toDomain);
+//    }
+
+    
+    public void deleteById(Long id) {
+        jpaRepository.deleteById(id);
+    }
+
+    
+    public boolean existsById(Long id) {
+        return jpaRepository.existsById(id);
+    }
+    
 }

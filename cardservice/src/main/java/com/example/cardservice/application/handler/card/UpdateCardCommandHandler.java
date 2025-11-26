@@ -1,11 +1,11 @@
 package com.example.cardservice.application.handler.card;
 
+import com.example.cardservice.adapter.persistance.repository.CardRepositoryAdapter;
+import com.example.cardservice.application.CommandHandler;
+import com.example.cardservice.application.command.UpdateCardCommand;
+import com.example.cardservice.domain.exception.CardNotFoundException;
+import com.example.cardservice.domain.model.Card;
 import lombok.RequiredArgsConstructor;
-import org.project.memospace.application.cqrs.CommandHandler;
-import org.project.memospace.application.cqrs.command.card.UpdateCardCommand;
-import org.project.memospace.domain.exception.CardNotFoundException;
-import org.project.memospace.domain.model.Card;
-import org.project.memospace.domain.port.CardRepositoryPort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,14 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UpdateCardCommandHandler implements CommandHandler<UpdateCardCommand, Card> {
 
-    private final CardRepositoryPort cardRepository;
+    private final CardRepositoryAdapter cardRepositoryAdapter;
 
     @Override
     public Card handle(UpdateCardCommand command) {
-        Card card = cardRepository.findById(command.getCardId())
-                .orElseThrow(() -> new CardNotFoundException(command.getCardId()));
-
-        Card updatedCard = card.updateContent(command.getFront(), command.getBack(), command.getTags());
-        return cardRepository.save(updatedCard);
+//        Card card = cardRepositoryAdapter.findById(command.cardId())
+//                .orElseThrow(() -> new CardNotFoundException(command.cardId()));
+//
+//        Card updatedCard = card.updateContent(command.front(), command.back(), command.tags());
+//        return cardRepositoryAdapter.save(updatedCard);
+        return null;
     }
 }

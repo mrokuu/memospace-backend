@@ -1,11 +1,11 @@
 package com.example.cardservice.application.handler.card;
 
+import com.example.cardservice.adapter.persistance.repository.CardRepositoryAdapter;
+import com.example.cardservice.application.QueryHandler;
+import com.example.cardservice.application.query.GetCardQuery;
+import com.example.cardservice.domain.exception.CardNotFoundException;
+import com.example.cardservice.domain.model.Card;
 import lombok.RequiredArgsConstructor;
-import org.project.memospace.application.cqrs.QueryHandler;
-import org.project.memospace.application.cqrs.query.card.GetCardQuery;
-import org.project.memospace.domain.exception.CardNotFoundException;
-import org.project.memospace.domain.model.Card;
-import org.project.memospace.domain.port.CardRepositoryPort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GetCardQueryHandler implements QueryHandler<GetCardQuery, Card> {
 
-    private final CardRepositoryPort cardRepository;
+    private final CardRepositoryAdapter cardRepositoryAdapter;
 
     @Override
     public Card handle(GetCardQuery query) {
-        return cardRepository.findById(query.getCardId())
-                .orElseThrow(() -> new CardNotFoundException(query.getCardId()));
+//        return cardRepositoryAdapter.findById(query.cardId())
+//                .orElseThrow(() -> new CardNotFoundException(query.cardId()));
+        return null;
     }
 }

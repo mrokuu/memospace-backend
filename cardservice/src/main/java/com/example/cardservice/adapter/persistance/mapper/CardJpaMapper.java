@@ -2,6 +2,7 @@ package com.example.cardservice.adapter.persistance.mapper;
 
 import com.example.cardservice.domain.entity.CardEntity;
 import com.example.cardservice.domain.model.Card;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;

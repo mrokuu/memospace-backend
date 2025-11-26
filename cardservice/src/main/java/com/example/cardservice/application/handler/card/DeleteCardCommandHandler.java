@@ -1,27 +1,28 @@
 package com.example.cardservice.application.handler.card;
 
+import com.example.cardservice.adapter.persistance.repository.CardRepositoryAdapter;
+import com.example.cardservice.application.CommandHandler;
+import com.example.cardservice.application.command.DeleteCardCommand;
+import com.example.cardservice.domain.exception.CardNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.project.memospace.application.cqrs.CommandHandler;
-import org.project.memospace.application.cqrs.command.card.DeleteCardCommand;
-import org.project.memospace.domain.exception.CardNotFoundException;
-import org.project.memospace.domain.port.CardRepositoryPort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Component
 @RequiredArgsConstructor
 @Transactional
 public class DeleteCardCommandHandler implements CommandHandler<DeleteCardCommand, Void> {
 
-    private final CardRepositoryPort cardRepository;
+    private final CardRepositoryAdapter cardRepositoryAdapter;
 
     @Override
     public Void handle(DeleteCardCommand command) {
-        if (!cardRepository.existsById(command.getCardId())) {
-            throw new CardNotFoundException(command.getCardId());
+        if (!cardRepositoryAdapter.existsById(command.cardId())) {
+            throw new CardNotFoundException(command.cardId());
         }
 
-        cardRepository.deleteById(command.getCardId());
+        cardRepositoryAdapter.deleteById(command.cardId());
         return null;
     }
 }
