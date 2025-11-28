@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc36216b-47e9-4bcb-bfe1-54910d4e2b4f" name="Changes" comment="refactor: fix imports" />
+    <list default="true" id="cc36216b-47e9-4bcb-bfe1-54910d4e2b4f" name="Changes" comment="refactor: fix imports">
+      <change beforePath="$PROJECT_DIR$/infrastructure/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/src/main/java/com/example/infrastructure/InfrastructureApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/infrastructure/src/test/java/com/example/infrastructure/InfrastructureApplicationTests.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,9 +72,9 @@
     "Spring Boot.MemospaceApplication (1).executor": "Run",
     "Spring Boot.MemospaceApplication (2).executor": "Run",
     "Spring Boot.MemospaceApplication.executor": "Run",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "create-infra",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/adammroczkowski/IdeaProjects/memospace-backend/deckservice/src/main/java/org/project/deckservice/application/handler",
+    "last_opened_file_path": "/Users/adammroczkowski/IdeaProjects/memospace-backend/infrastructure",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -78,6 +87,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cardservice/src/main/java/com/example/cardservice" />
       <recent name="$PROJECT_DIR$/deckservice/src/main/java/org/project/deckservice/application/handler" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -111,7 +121,7 @@
       </map>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.DeckserviceApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="memospace-backend" />
       <method v="2">
