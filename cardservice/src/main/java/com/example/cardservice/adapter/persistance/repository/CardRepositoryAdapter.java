@@ -24,10 +24,10 @@ public class CardRepositoryAdapter {
     }
 
     
-//    public Optional<Deck> findById(Long id) {
-//        return jpaRepository.findById(id)
-//                .map(mapper::toDomain);
-//    }
+    public Optional<Card> findById(Long id) {
+        return jpaRepository.findById(id)
+                .map(mapper::toDomain);
+    }
 
     
     public void deleteById(Long id) {
@@ -38,5 +38,5 @@ public class CardRepositoryAdapter {
     public boolean existsById(Long id) {
         return jpaRepository.existsById(id);
     }
-    
+
 }

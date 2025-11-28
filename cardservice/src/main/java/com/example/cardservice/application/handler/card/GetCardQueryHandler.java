@@ -18,8 +18,7 @@ public class GetCardQueryHandler implements QueryHandler<GetCardQuery, Card> {
 
     @Override
     public Card handle(GetCardQuery query) {
-//        return cardRepositoryAdapter.findById(query.cardId())
-//                .orElseThrow(() -> new CardNotFoundException(query.cardId()));
-        return null;
+        return cardRepositoryAdapter.findById(query.cardId())
+                .orElseThrow(() -> new CardNotFoundException(query.cardId()));
     }
 }

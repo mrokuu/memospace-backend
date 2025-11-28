@@ -18,11 +18,10 @@ public class UpdateCardCommandHandler implements CommandHandler<UpdateCardComman
 
     @Override
     public Card handle(UpdateCardCommand command) {
-//        Card card = cardRepositoryAdapter.findById(command.cardId())
-//                .orElseThrow(() -> new CardNotFoundException(command.cardId()));
-//
-//        Card updatedCard = card.updateContent(command.front(), command.back(), command.tags());
-//        return cardRepositoryAdapter.save(updatedCard);
-        return null;
+        Card card = cardRepositoryAdapter.findById(command.cardId())
+                .orElseThrow(() -> new CardNotFoundException(command.cardId()));
+
+        Card updatedCard = card.updateContent(command.front(), command.back(), command.tags());
+        return cardRepositoryAdapter.save(updatedCard);
     }
 }
