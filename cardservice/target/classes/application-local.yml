@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./.data/memospace;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    org.project.memospace: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
