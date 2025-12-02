@@ -1,0 +1,4 @@
+# common.yml
+networks:
+  ticketing-system:
+    driver: bridge
